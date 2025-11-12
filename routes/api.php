@@ -10,6 +10,8 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
+// API Routes
+
 // Fetch only (Open APIs)
 Route::name('api.')->group(function () {
     Route::get('/students', [StudentController::class, 'index']);
@@ -26,7 +28,6 @@ Route::name('api.')->group(function () {
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/participations', [ParticipationController::class, 'store']);
     Route::delete('/participations/{id}', [ParticipationController::class, 'destroy']);
-    Route::put('/participations/{id}', [ParticipationController::class, 'update']);
 
     Route::post('/events', [EventController::class, 'store']);
     Route::put('/events/{id}', [EventController::class, 'update']);
@@ -36,3 +37,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/students/{id}', [StudentController::class, 'update']);
     Route::delete('/students/{id}', [StudentController::class, 'destroy']);
 });
+
+//User Routes
+
+Route::post('/register', [\App\Http\Controllers\AuthController::class, 'register']);
+Route::post('/login', [\App\Http\Controllers\AuthController::class, 'login']);
