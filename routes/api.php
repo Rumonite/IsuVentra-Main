@@ -2,9 +2,12 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\ParticipationController;
+
+use App\Http\Controllers\AuthController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -26,19 +29,30 @@ Route::name('api.')->group(function () {
 
 // Admin-only (Protected APIs)
 Route::middleware('auth:sanctum')->group(function () {
-    Route::post('/participations', [ParticipationController::class, 'store']);
-    Route::delete('/participations/{id}', [ParticipationController::class, 'destroy']);
 
-    Route::post('/events', [EventController::class, 'store']);
-    Route::put('/events/{id}', [EventController::class, 'update']);
-    Route::delete('/events/{id}', [EventController::class, 'destroy']);
+    Route::controller(ParticipationController::class)->group(function () {
+        Route::post('/participations', 'store');
+        Route::delete('/participations/{id}', 'destroy');
+    });
 
-    Route::post('/students', [StudentController::class, 'store']);
-    Route::put('/students/{id}', [StudentController::class, 'update']);
-    Route::delete('/students/{id}', [StudentController::class, 'destroy']);
+
+    Route::controller(EventController::class)->group(function () {
+        Route::post('/events', 'store');
+        Route::put('/events/{id}', 'update');
+        Route::delete('/events/{id}', 'destroy');
+    });
+
+    Route::controller(StudentController::class)->group(function () {
+        Route::post('/students', 'store');
+        Route::put('/students/{id}', 'update');
+        Route::delete('/students/{id}', 'destroy');
+    });
+
 });
 
 //User Routes
 
-Route::post('/register', [\App\Http\Controllers\AuthController::class, 'register']);
-Route::post('/login', [\App\Http\Controllers\AuthController::class, 'login']);
+Route::controller(AuthController::class)->group(function () {
+    Route::post('/register', 'register');
+    Route::post('/login', 'login');
+});
