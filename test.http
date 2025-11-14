@@ -25,3 +25,9 @@ Content-Type: application/json
 GET http://localhost:8000/api/user
 Accept: application/json
 Authorization: Bearer 5|wiMFIDjaQQVu51ZSrFUvSPLBNZ65mYMq3jZxXfzj70afde54
+
+###
+
+GET http://localhost:8000/api/students
+Accept: application/json
+Authorization: Bearer JPpP6RxQO106wtqVNaNyDKz16xFEDlhZLq3R1uzm10cedb2c

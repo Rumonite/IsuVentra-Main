@@ -8,6 +8,7 @@ use App\Http\Controllers\EventController;
 use App\Http\Controllers\ParticipationController;
 
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Middleware\AdminCheck;
 
 Route::get('user', function (Request $request) {
     return $request->user();
@@ -34,12 +35,13 @@ Route::name('api.')->group(function () {
     });
 }); 
 
-// Admin-only (Protected APIs)
+// Authorized-only (Protected APIs)
 Route::middleware('auth:sanctum')->group(function () {
 
+    //Students can only attend (POST) participations 
     Route::controller(ParticipationController::class)->group(function () {
         Route::post('participations', 'store');
-        Route::delete('participations/{id}', 'destroy');
+        Route::delete('participations/{id}', 'destroy')->middleware([AdminCheck::class]);
     });
 
 
@@ -47,13 +49,13 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('events', 'store');
         Route::put('events/{id}', 'update');
         Route::delete('events/{id}', 'destroy');
-    });
+    })->middleware([AdminCheck::class]);
 
     Route::controller(StudentController::class)->group(function () {
         Route::post('students', 'store');
         Route::put('students/{id}', 'update');
         Route::delete('students/{id}', 'destroy');
-    });
+    })->middleware([AdminCheck::class]);
 
 });
 
