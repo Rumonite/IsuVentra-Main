@@ -2,11 +2,7 @@
   <div class="join-container">
     <h2>Scan QR Code</h2>
 
-    <qrcode-stream 
-      @decode="onDecode" 
-      @init="onInit" 
-      @detect="onDetect"
-    />
+    <video ref="video" autoplay muted playsinline></video>
 
     <div class="status">
       <p v-if="qrDetected"><strong>QR Code Detected!</strong></p>
@@ -24,41 +20,65 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
-import { QrcodeStream, setZXingModuleOverrides } from "vue-qrcode-reader";
-import * as ZXingBrowser from "@zxing/browser"; // <-- correct import
+import { ref, onMounted, onBeforeUnmount } from "vue";
+import { BrowserQRCodeReader } from "@zxing/browser";
 import api from "@/services/api";
 
-setZXingModuleOverrides({
-  BrowserQRCodeReader: ZXingBrowser.BrowserQRCodeReader
-});
-
-
+const showScanner = ref(true);
+const video = ref(null);
 const scannedEventId = ref(null);
+const qrDetected = ref(false);
 const loading = ref(false);
 const error = ref(null);
-const qrDetected = ref(false);
+const lastScanned = ref(null);
 
-const onDecode = async (result) => {
-  const eventId = result.trim();
-  scannedEventId.value = eventId;
-  error.value = null;
-  qrDetected.value = false; // reset detection
+let codeReader;
 
-  loading.value = true;
-  console.log("QR decoded:", result);
+onMounted(async () => {
+  codeReader = new BrowserQRCodeReader();
 
   try {
-    const res = await api.post("/participations/scan", {
-      event_id: eventId,
+    await codeReader.decodeFromVideoDevice(null, video.value, (result, err) => {
+      if (result) {
+        qrDetected.value = true;
+
+        const eventId = result.getText().trim();
+
+        // Prevent duplicate scans
+        if (lastScanned.value === eventId) return;
+        lastScanned.value = eventId;
+
+        handleScan(eventId);
+      } else {
+        qrDetected.value = false;
+      }
+
+      if (err && !(err.name === "NotFoundException")) {
+        console.warn(err);
+      }
     });
-    
+  } catch (err) {
+    if (err.name === "NotAllowedError") error.value = "Camera access denied.";
+    else if (err.name === "NotFoundError") error.value = "No camera found.";
+    else error.value = "Camera initialization failed.";
+  }
+});
+
+onBeforeUnmount(() => {
+  // just hide/unmount the scanner instead of calling reset()
+  showScanner.value = false;
+});
+
+const handleScan = async (eventId) => {
+  scannedEventId.value = eventId;
+  loading.value = true;
+  error.value = null;
+
+  try {
+    const res = await api.post("/participations/scan", { event_id: eventId });
 
     if (res.data.status === "already_in") {
-      const confirmOut = confirm(
-        "You're already participating in this event. Time-out now?"
-      );
-
+      const confirmOut = confirm("You're already participating. Time-out now?");
       if (confirmOut) {
         await api.post("/participations/out", { event_id: eventId });
         alert("You have timed out.");
@@ -69,28 +89,16 @@ const onDecode = async (result) => {
       alert("Participation recorded!");
     }
   } catch (err) {
-    error.value =
-      err.response?.data?.message || "Something went wrong while scanning.";
+    if (err.response) {
+      error.value = err.response.data.message || "Server error.";
+    } else {
+      error.value = "Network error. Check your connection.";
+    }
   } finally {
     loading.value = false;
+    setTimeout(() => (lastScanned.value = null), 2000);
+    setTimeout(() => (scannedEventId.value = null), 3000);
   }
-};
-
-const onDetect = (result) => {
-  // Fires continuously while a QR code is in view
-  qrDetected.value = !!result; // true if QR code is detected
-};
-
-const onInit = (promise) => {
-  promise.catch((err) => {
-    if (err.name === "NotAllowedError") {
-      error.value = "Camera access denied.";
-    } else if (err.name === "NotFoundError") {
-      error.value = "No camera found.";
-    } else {
-      error.value = "Camera initialization failed.";
-    }
-  });
 };
 </script>
 
@@ -101,27 +109,34 @@ const onInit = (promise) => {
   text-align: center;
 }
 
+video {
+  width: 100%;
+  max-width: 400px;
+  border-radius: 6px;
+  margin-bottom: 15px;
+}
+
 .status {
-  margin-top: 15px;
+  margin-top: 10px;
   padding: 10px;
   background: #eef;
   border-radius: 6px;
 }
 
 .scanned {
-  margin-top: 15px;
+  margin-top: 10px;
   padding: 10px;
   background: #def;
   border-radius: 6px;
 }
 
 .loading {
-  margin-top: 15px;
+  margin-top: 10px;
   color: #333;
 }
 
 .error {
-  margin-top: 15px;
+  margin-top: 10px;
   color: red;
 }
 </style>

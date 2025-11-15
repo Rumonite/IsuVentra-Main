@@ -71,3 +71,9 @@ Route::controller(AuthController::class)->group(function () {
     Route::post('/login', 'login');
     Route::post('/logout', 'logout')->middleware('auth:sanctum');
 });
+
+// routes/api.php
+Route::middleware('auth:sanctum')->get('/validate-token', function (Request $request) {
+    return response()->json(['valid' => true, 'user' => $request->user()]);
+});
+

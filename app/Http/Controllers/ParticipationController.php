@@ -98,7 +98,7 @@ class ParticipationController extends Controller
         $user = $request->user();
         $eventId = $request->event_id;
 
-        $participation = Participation::where('user_id', $user->id)
+        $participation = Participation::where('student_id', $user->id)
             ->where('event_id', $eventId)
             ->first();
 
