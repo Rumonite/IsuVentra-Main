@@ -17,7 +17,9 @@
 
 <script setup>
 import { useAuthStore } from "@/stores/auth";
+import { onMounted } from "vue";
 import { useRouter } from "vue-router";
+import api from "@/services/api";
 
 const auth = useAuthStore();
 const router = useRouter();
@@ -26,7 +28,20 @@ const logout = () => {
   auth.logout();
   router.push({ name: "login" });
 };
+
+onMounted(async () => {
+  const auth = useAuthStore();
+  if (auth.token) {
+    try {
+      await api.get('/validate-token');
+    } catch {
+      auth.logout();
+    }
+  }
+});
 </script>
+
+
 
 <style>
 #app {
