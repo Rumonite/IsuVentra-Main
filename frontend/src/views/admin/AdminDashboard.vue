@@ -44,6 +44,16 @@
           <canvas ref="chartCanvas"></canvas>
         </div>
 
+        <div class="chart-container">
+          <h3>Moving Average (7-day)</h3>
+          <canvas ref="maChartCanvas"></canvas>
+        </div>
+
+        <div class="chart-container">
+          <h3>Exponential Smoothing (α=0.3)</h3>
+          <canvas ref="esChartCanvas"></canvas>
+        </div>
+
         <div class="widgets">
           <div class="widget">
             <h3>Ongoing Events</h3>
@@ -171,21 +181,28 @@ const stats = ref({
 
 const ongoingEvents = ref([]);
 const latestParticipation = ref([]);
+const participationStats = ref([]);
 
 const chartCanvas = ref(null);
+const maChartCanvas = ref(null);
+const esChartCanvas = ref(null);
 let chartInstance;
+let maChartInstance;
+let esChartInstance;
 
 // Load all data
 async function loadAdminData() {
-  const [stuRes, eveRes, partRes] = await Promise.all([
+  const [stuRes, eveRes, partRes, statsRes] = await Promise.all([
     api.get("/students"),
     api.get("/events"),
     api.get("/participation"),
+    api.get("/participation/stats"),
   ]);
 
   students.value = stuRes.data;
   events.value = eveRes.data;
   participation.value = partRes.data;
+  participationStats.value = statsRes.data;
 
   stats.value = {
     students: students.value.length,
@@ -193,10 +210,12 @@ async function loadAdminData() {
     participation: participation.value.length,
   };
 
-  ongoingEvents.value = events.value.filter((e) => e.is_ongoing);
+  ongoingEvents.value = events.value.filter((e) => e.is_ongoing === 1);
   latestParticipation.value = participation.value.slice(0, 5);
 
   renderChart();
+  renderMAChart();
+  renderESChart();
 }
 
 function renderChart() {
@@ -219,6 +238,122 @@ function renderChart() {
         },
       ],
     },
+  });
+}
+
+function renderMAChart() {
+  if (!maChartCanvas.value) return;
+
+  if (maChartInstance) maChartInstance.destroy();
+
+  if (!Array.isArray(participationStats.value) || participationStats.value.length === 0) {
+    console.warn('No participation stats data available for moving average chart');
+    return;
+  }
+
+  const data = participationStats.value.map(stat => stat.count);
+  const labels = participationStats.value.map(stat => stat.date);
+
+  // Compute 7-day moving average
+  const maData = [];
+  for (let i = 0; i < data.length; i++) {
+    const start = Math.max(0, i - 6);
+    const sum = data.slice(start, i + 1).reduce((a, b) => a + b, 0);
+    maData.push(sum / (i - start + 1));
+  }
+
+  maChartInstance = new Chart(maChartCanvas.value, {
+    type: "line",
+    data: {
+      labels: labels,
+      datasets: [
+        {
+          label: "7-Day Moving Average",
+          data: maData,
+          borderColor: "rgba(75, 192, 192, 1)",
+          backgroundColor: "rgba(75, 192, 192, 0.2)",
+          fill: true,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      scales: {
+        x: {
+          display: true,
+          title: {
+            display: true,
+            text: 'Date'
+          }
+        },
+        y: {
+          display: true,
+          title: {
+            display: true,
+            text: 'Participation Count'
+          }
+        }
+      }
+    }
+  });
+}
+
+function renderESChart() {
+  if (!esChartCanvas.value) return;
+
+  if (esChartInstance) esChartInstance.destroy();
+
+  if (!Array.isArray(participationStats.value) || participationStats.value.length === 0) {
+    console.warn('No participation stats data available for exponential smoothing chart');
+    return;
+  }
+
+  const data = participationStats.value.map(stat => stat.count);
+  const labels = participationStats.value.map(stat => stat.date);
+
+  // Compute exponential smoothing with alpha=0.3
+  const alpha = 0.3;
+  const esData = [];
+  let smoothed = data[0] || 0;
+  esData.push(smoothed);
+  for (let i = 1; i < data.length; i++) {
+    smoothed = alpha * data[i] + (1 - alpha) * smoothed;
+    esData.push(smoothed);
+  }
+
+  esChartInstance = new Chart(esChartCanvas.value, {
+    type: "line",
+    data: {
+      labels: labels,
+      datasets: [
+        {
+          label: "Exponential Smoothing (α=0.3)",
+          data: esData,
+          borderColor: "rgba(255, 99, 132, 1)",
+          backgroundColor: "rgba(255, 99, 132, 0.2)",
+          fill: true,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      scales: {
+        x: {
+          display: true,
+          title: {
+            display: true,
+            text: 'Date'
+          }
+        },
+        y: {
+          display: true,
+          title: {
+            display: true,
+            text: 'Participation Count'
+          }
+        }
+      }
+    }
   });
 }
 

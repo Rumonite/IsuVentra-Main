@@ -12,7 +12,20 @@ class ParticipationController extends Controller
      */
     public function index()
     {
-        $participations = Participation::all();
+        $participations = Participation::with(['student', 'event'])
+            ->orderBy('time_in', 'desc')
+            ->get()
+            ->map(function ($participation) {
+                return [
+                    'id' => $participation->id,
+                    'student_id' => $participation->student_id,
+                    'event_id' => $participation->event_id,
+                    'student_name' => $participation->student->name,
+                    'event_name' => $participation->event->title,
+                    'time_in' => $participation->time_in,
+                    'time_out' => $participation->time_out,
+                ];
+            });
         return response()->json($participations);
     }
 
@@ -118,5 +131,25 @@ class ParticipationController extends Controller
             'message' => 'You have timed out of the event.'
         ]);
     }
-    
+
+    /**
+     * Get participation statistics (daily counts)
+     */
+    public function getParticipationStats()
+    {
+        $stats = Participation::selectRaw('DATE(time_in) as date, COUNT(*) as count')
+            ->whereNotNull('time_in')
+            ->groupBy('date')
+            ->orderBy('date', 'asc')
+            ->get()
+            ->map(function ($stat) {
+                return [
+                    'date' => $stat->date,
+                    'count' => (int) $stat->count,
+                ];
+            });
+
+        return response()->json($stats);
+    }
+
 }

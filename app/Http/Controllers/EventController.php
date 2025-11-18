@@ -16,13 +16,15 @@ class EventController extends Controller
         // Fetch all events, ordered by start time
         $events = Event::orderBy('time_start')->get();
 
-        // Group them by date using Carbon
-        $grouped = $events->groupBy(function ($event) {
-            return Carbon::parse($event->time_start)->format('Y-m-d');
+        // Add is_ongoing field based on current time
+        $now = Carbon::now();
+        $events->transform(function ($event) use ($now) {
+            $event->is_ongoing = $now->between($event->time_start, $event->time_end);
+            return $event;
         });
 
-        // Return as JSON (Laravel automatically converts the collection)
-        return response()->json($grouped);
+        // Return as JSON array for frontend compatibility
+        return response()->json($events);
     }
 
 

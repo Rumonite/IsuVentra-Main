@@ -1,9 +1,20 @@
-# TODO: Fix Backend Admin Identification
+# TODO: Add Statistics to Admin Dashboard
 
-## Tasks
-- [x] Update AuthController login method to include user data in response
-- [x] Fix AdminCheck middleware condition to use || instead of &&
+## Backend Changes
+- [x] Add `getParticipationStats()` method in `ParticipationController.php` to fetch daily participation counts grouped by date of `time_in`.
+- [x] Add protected API route `/participation/stats` in `routes/api.php` (admin-only via AdminCheck middleware).
 
-## Followup Steps
-- [x] Test login to ensure user data is returned and frontend can identify admin role
-- [x] Verify admin-protected routes work correctly
+## Frontend Changes
+- [x] In `AdminDashboard.vue`, add data fetching for participation stats from new API endpoint.
+- [x] Compute 7-day simple moving average on daily participation counts.
+- [x] Compute exponential smoothing (alpha=0.3) on daily participation counts.
+- [x] Add two new chart containers (line charts using Chart.js) for moving average and exponential smoothing below the existing bar chart.
+
+## Testing and Verification
+- [x] Fixed runtime errors in chart rendering functions by adding array checks.
+- [x] Created ParticipationFactory and ParticipationSeeder to generate example participation data.
+- [x] Updated DatabaseSeeder to include ParticipationSeeder.
+- [x] Ran migrate:fresh --seed to populate database with sample data.
+- [ ] Test the new API endpoint `/api/participation/stats` to ensure it returns correct daily stats data.
+- [ ] Run the frontend application and verify that the new charts render correctly on the admin dashboard.
+- [ ] Adjust smoothing parameters or add more statistics if needed based on testing.
