@@ -10,9 +10,6 @@
         <button @click="currentPage = 'events'">Events</button>
         <button @click="currentPage = 'participation'">Participation</button>
 
-        <button class="logout" @click="logout">
-          Logout
-        </button>
       </nav>
     </aside>
 
@@ -162,11 +159,9 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
-import { useAuthStore } from "../../stores/auth";
 import api from "@/services/api"; 
 import Chart from "chart.js/auto";
 
-const auth = useAuthStore();
 
 const currentPage = ref("overview");
 const students = ref([]);
@@ -357,9 +352,6 @@ function renderESChart() {
   });
 }
 
-function logout() {
-  auth.logout();
-}
 
 onMounted(() => {
   loadAdminData();
@@ -369,48 +361,207 @@ onMounted(() => {
 <style scoped>
 .admin-container {
   display: flex;
-  height: 100vh;
+  min-height: 100vh;
+  background-color: var(--primary-bg);
 }
 
 .sidebar {
-  width: 220px;
-  background: #222;
-  padding: 20px;
-  color: white;
+  width: 260px;
+  background: var(--secondary-bg);
+  padding: 24px;
+  color: var(--text-color);
+  border-right: 1px solid var(--border-color);
+  box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar h2 {
+  color: var(--accent);
+  margin-bottom: 24px;
+  font-size: 1.2em;
+  font-weight: bold;
+}
+
+.sidebar nav {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .sidebar button {
   width: 100%;
-  margin-bottom: 10px;
+  margin-bottom: 0;
+  padding: 12px 16px;
+  background-color: var(--accent);
+  color: var(--primary-bg);
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: left;
+}
+
+.sidebar button:hover {
+  background-color: var(--light-accent);
+  transform: translateX(2px);
 }
 
 .content {
   flex: 1;
-  padding: 20px;
+  padding: 32px;
+  background-color: var(--primary-bg);
+  color: var(--text-color);
+  overflow-y: auto;
+}
+
+.content h1 {
+  color: var(--text-color);
+  margin-bottom: 32px;
+  font-size: 2em;
+  font-weight: 300;
 }
 
 .grid {
-  display: flex;
-  gap: 20px;
-  margin-bottom: 30px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 24px;
+  margin-bottom: 40px;
 }
 
 .card {
-  background: #f7f7f7;
-  padding: 20px;
-  border-radius: 8px;
-  flex: 1;
+  background: var(--secondary-bg);
+  padding: 24px;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.card h2 {
+  color: var(--accent);
+  margin-bottom: 16px;
+  font-size: 1.1em;
+  font-weight: 600;
+}
+
+.card p {
+  color: var(--text-color);
+  font-size: 28px;
+  font-weight: bold;
+  margin: 0;
 }
 
 .chart-container {
-  max-width: 600px;
-  margin-bottom: 30px;
+  max-width: 100%;
+  margin-bottom: 40px;
+  background: var(--secondary-bg);
+  padding: 24px;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.chart-container h3 {
+  color: var(--text-color);
+  margin-bottom: 20px;
+  font-size: 1.2em;
+  font-weight: 600;
 }
 
 .widget {
-  background: #fff;
-  padding: 15px;
-  border-radius: 8px;
-  margin-bottom: 20px;
+  background: var(--secondary-bg);
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 24px;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.widget h3 {
+  color: var(--accent);
+  margin-bottom: 16px;
+  font-size: 1.1em;
+  font-weight: 600;
+}
+
+.widget ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.widget li {
+  color: var(--text-color);
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 0.95em;
+}
+
+.widget li:last-child {
+  border-bottom: none;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--secondary-bg);
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-top: 16px;
+}
+
+th, td {
+  padding: 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+}
+
+th {
+  background: var(--primary-bg);
+  color: var(--accent);
+  font-weight: 600;
+  font-size: 0.95em;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+td {
+  color: var(--text-color);
+  font-size: 0.95em;
+}
+
+tr:hover {
+  background: rgba(102, 187, 106, 0.08);
+  transition: background-color 0.2s ease;
+}
+
+button {
+  padding: 10px 16px;
+  background-color: var(--accent);
+  color: var(--primary-bg);
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9em;
+  transition: all 0.3s ease;
+  margin-right: 8px;
+}
+
+button:hover {
+  background-color: var(--light-accent);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+button:last-child {
+  margin-right: 0;
 }
 </style>

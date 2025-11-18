@@ -1,20 +1,32 @@
-# TODO: Add Statistics to Admin Dashboard
+# UI Improvement Plan: Natural Dark-Greenish Color Scheme
 
-## Backend Changes
-- [x] Add `getParticipationStats()` method in `ParticipationController.php` to fetch daily participation counts grouped by date of `time_in`.
-- [x] Add protected API route `/participation/stats` in `routes/api.php` (admin-only via AdminCheck middleware).
+## Overview
+Apply a consistent natural dark-greenish color scheme across the Vue.js frontend to improve overall UI aesthetics. The theme will use dark greens for backgrounds, lighter greens for accents, and white/light text for readability.
 
-## Frontend Changes
-- [x] In `AdminDashboard.vue`, add data fetching for participation stats from new API endpoint.
-- [x] Compute 7-day simple moving average on daily participation counts.
-- [x] Compute exponential smoothing (alpha=0.3) on daily participation counts.
-- [x] Add two new chart containers (line charts using Chart.js) for moving average and exponential smoothing below the existing bar chart.
+## Color Palette
+- **Primary Background**: #1a2e1f (deep forest green)
+- **Secondary Background**: #2e4d2e (medium dark green)
+- **Accent/Primary Color**: #4caf50 (material green)
+- **Light Accent**: #81c784 (light green)
+- **Text Color**: #e8f5e8 (light green-white)
+- **Error Color**: #ff8a80 (soft red for errors)
+- **Success Color**: #81c784 (light green for success)
 
-## Testing and Verification
-- [x] Fixed runtime errors in chart rendering functions by adding array checks.
-- [x] Created ParticipationFactory and ParticipationSeeder to generate example participation data.
-- [x] Updated DatabaseSeeder to include ParticipationSeeder.
-- [x] Ran migrate:fresh --seed to populate database with sample data.
-- [ ] Test the new API endpoint `/api/participation/stats` to ensure it returns correct daily stats data.
-- [ ] Run the frontend application and verify that the new charts render correctly on the admin dashboard.
-- [ ] Adjust smoothing parameters or add more statistics if needed based on testing.
+## Tasks
+- [ ] Update `frontend/src/App.vue`: Apply dark-green theme to global styles, navigation bar, and buttons
+- [ ] Update `frontend/src/views/LoginPage.vue`: Style auth form with dark-green backgrounds, inputs, and buttons
+- [ ] Update `frontend/src/views/RegisterPage.vue`: Style registration form consistently with login page
+- [ ] Update `frontend/src/views/UserDashboard.vue`: Add dark-green styling to dashboard layout and elements
+- [ ] Update `frontend/src/views/admin/AdminDashboard.vue`: Apply theme to admin sidebar, content area, cards, tables, and charts
+- [ ] Update `frontend/src/views/JoinPage.vue`: Style QR scanner page with dark-green theme
+- [ ] Update `frontend/src/components/HelloWorld.vue`: Apply theme to component if used
+- [ ] Update `frontend/src/views/HomeView.vue`: Style home page if applicable
+- [ ] Update `frontend/src/views/AboutView.vue`: Style about page if applicable
+- [ ] Test UI consistency across all pages
+
+## Implementation Notes
+- Use CSS custom properties (variables) for consistent color application
+- Ensure sufficient contrast for accessibility (light text on dark backgrounds)
+- Maintain responsive design and existing functionality
+- Update hover states and active states to fit the theme
+- Apply theme to buttons, links, inputs, tables, and other UI elements

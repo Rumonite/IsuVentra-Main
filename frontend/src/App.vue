@@ -48,28 +48,41 @@ onMounted(async () => {
 
 
 <style>
+:root {
+  --primary-bg: #2d4a22;
+  --secondary-bg: #4a6b3a;
+  --accent: #66bb6a;
+  --light-accent: #81c784;
+  --text-color: #f1f8e9;
+  --error-color: #ef5350;
+  --success-color: #81c784;
+  --border-color: #6b8e5a;
+}
+
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #2c3e50;
+  color: var(--text-color);
+  background-color: var(--primary-bg);
+  min-height: 100vh;
 }
 
 nav {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 15px; /* spacing between items */
+  gap: 15px;
   padding: 15px;
   margin-bottom: 20px;
-  background-color: #f5f5f5;
-  border-bottom: 1px solid #ddd;
+  background-color: var(--secondary-bg);
+  border-bottom: 1px solid var(--border-color);
 }
 
 nav a {
   font-weight: bold;
-  color: #2c3e50;
+  color: var(--text-color);
   text-decoration: none;
   position: relative;
   padding: 0 10px;
@@ -80,25 +93,25 @@ nav a + a::before {
   content: "|";
   position: absolute;
   left: 0;
-  color: #ccc;
+  color: var(--light-accent);
 }
 
 /* active route highlight */
 nav a.router-link-exact-active {
-  color: #42b983;
+  color: var(--accent);
 }
 
 nav button {
   cursor: pointer;
   font-weight: bold;
-  background: #e74c3c;
-  color: white;
+  background: var(--error-color);
+  color: var(--primary-bg);
   border: none;
   padding: 5px 10px;
   border-radius: 3px;
 }
 
 nav button:hover {
-  background: #c0392b;
+  background: #e57373;
 }
 </style>

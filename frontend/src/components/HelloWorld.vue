@@ -41,8 +41,13 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+h1 {
+  color: var(--text-color);
+}
+
 h3 {
   margin: 40px 0 0;
+  color: var(--accent);
 }
 ul {
   list-style-type: none;
@@ -53,6 +58,11 @@ li {
   margin: 0 10px;
 }
 a {
-  color: #42b983;
+  color: var(--accent);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
 }
 </style>

@@ -103,9 +103,19 @@ const handleScan = async (eventId) => {
 
 <style scoped>
 .join-container {
-  max-width: 500px;
-  margin: 20px auto;
+  max-width: 600px;
+  margin: 40px auto;
   text-align: center;
+  background-color: var(--secondary-bg);
+  padding: 32px;
+  border-radius: 16px;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+}
+
+.join-container h2 {
+  color: var(--text-color);
+  margin-bottom: 20px;
 }
 
 video {
@@ -113,29 +123,49 @@ video {
   max-width: 400px;
   border-radius: 6px;
   margin-bottom: 15px;
+  border: 2px solid var(--border-color);
 }
 
 .status {
   margin-top: 10px;
   padding: 10px;
-  background: #eef;
+  background: var(--primary-bg);
   border-radius: 6px;
+  border: 1px solid var(--border-color);
+  color: var(--text-color);
+}
+
+.status p {
+  margin: 0;
+  font-weight: bold;
 }
 
 .scanned {
   margin-top: 10px;
   padding: 10px;
-  background: #def;
+  background: rgba(102, 187, 106, 0.1);
   border-radius: 6px;
+  border: 1px solid var(--accent);
+  color: var(--text-color);
+}
+
+.scanned p {
+  margin: 0;
+  font-weight: bold;
 }
 
 .loading {
   margin-top: 10px;
-  color: #333;
+  color: var(--text-color);
+  font-weight: bold;
 }
 
 .error {
   margin-top: 10px;
-  color: red;
+  color: var(--error-color);
+  background-color: rgba(255, 138, 128, 0.1);
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid var(--error-color);
 }
 </style>
