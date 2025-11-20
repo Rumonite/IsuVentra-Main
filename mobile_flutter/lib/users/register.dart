@@ -14,28 +14,31 @@ class _RegisterState extends State<Register> {
   TextEditingController txtEmail = TextEditingController();
   TextEditingController txtPassword = TextEditingController();
   TextEditingController txtConfirmPassword = TextEditingController();
-  TextEditingController txtProgram = TextEditingController();
 
   void register() async {
     String name = txtName.text.trim();
     String email = txtEmail.text.trim();
     String password = txtPassword.text.trim();
     String confirmPassword = txtConfirmPassword.text.trim();
-    String program = txtProgram.text.trim();
 
-    if (name.isEmpty || email.isEmpty || password.isEmpty || program.isEmpty) {
+    if (name.isEmpty || email.isEmpty || password.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Please fill out all fields")),
       );
-
       return;
     }
 
     if (password != confirmPassword) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text("Passwords do not match")));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Passwords do not match")),
+      );
+      return;
+    }
 
+    if (password.length < 8) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Password must be at least 8 characters")),
+      );
       return;
     }
 
@@ -44,14 +47,13 @@ class _RegisterState extends State<Register> {
       email,
       password,
       confirmPassword,
-      program,
     );
 
     if (!mounted) return;
 
     if (success) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Registration sucessful! Please log in.")),
+        const SnackBar(content: Text("Registration successful! Please log in.")),
       );
       Navigator.pushReplacement(
         context,
@@ -105,14 +107,6 @@ class _RegisterState extends State<Register> {
                   border: OutlineInputBorder(),
                 ),
                 obscureText: true,
-              ),
-              const SizedBox(height: 10),
-              TextField(
-                controller: txtProgram,
-                decoration: const InputDecoration(
-                  labelText: "Program",
-                  border: OutlineInputBorder(),
-                ),
               ),
               const SizedBox(height: 20),
               ElevatedButton(

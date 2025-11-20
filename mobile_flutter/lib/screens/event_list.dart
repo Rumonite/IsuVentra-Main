@@ -3,13 +3,11 @@ import 'package:flutter/material.dart';
 class EventListScreen extends StatelessWidget {
   const EventListScreen({super.key});
 
-//Usisng List builder to create list with participation button that will route to QR Scanner Screen in the future
+  //Usisng List builder to create list with participation button that will route to QR Scanner Screen in the future
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Events'),
-      ),
+      appBar: AppBar(title: const Text('Events')),
       body: ListView.builder(
         padding: const EdgeInsets.all(16),
         itemCount: 5, // Placeholder for events
